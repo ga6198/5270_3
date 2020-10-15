@@ -41,7 +41,17 @@ using CryptoPP::SecByteBlock;
 
 #include "nbtheory.h";
 
-void generatePrimeNumber(CryptoPP::Integer* primes, double* times, int i) {
+bool inArray(CryptoPP::Integer arr[10], CryptoPP::Integer itemToFind) {
+	for (int i = 0; i < 10; i++) {
+		if (arr[i] == itemToFind) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void generatePrimeNumber(CryptoPP::Integer (&primes)[10], double (&times)[10], int i) {
 	AutoSeededRandomPool prng;
 	CryptoPP::ThreadUserTimer timer;
 
@@ -51,13 +61,23 @@ void generatePrimeNumber(CryptoPP::Integer* primes, double* times, int i) {
 
 	double time = timer.ElapsedTimeAsDouble();
 
+	//check if the number was in the array already
+	while (inArray(primes, prime)) {
+		//if in the array, regenerate the number
+		prime = CryptoPP::MaurerProvablePrime(prng, 768);
+
+		time = timer.ElapsedTimeAsDouble();
+	}
+
 	//Set the passed in arrays with the numbers
 	primes[i] = prime;
 	times[i] = time;
 
 	//return time;
-	cout << prime << endl;
-	cout << time << endl;
+	//cout << prime << endl;
+	//cout << time << endl;
+
+	cout << "Number " << i << " generated" << endl;
 }
 
 int main(int argc, char* argv[])
@@ -70,14 +90,14 @@ int main(int argc, char* argv[])
 		generatePrimeNumber(primes, times, i);
 	}
 
-	/*
+	
 	for (int i = 0; i < 10; i++) {
-		cout << "Prime Number 1" << endl;
-		cout << primes[10] << endl;
-		cout << "Time: " << times[i] << endl;
+		cout << "Prime Number " << i << endl;
+		cout << primes[i] << endl;
+		cout << "Generation Time: " << times[i] << " seconds" << endl;
 		cout << endl;
 	}
-	*/
+	
 	
 	return 0;
 }
